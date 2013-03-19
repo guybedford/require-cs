@@ -126,26 +126,30 @@ define(['coffee-script'], function (CoffeeScript) {
             var path = parentRequire.toUrl(name + '.coffee');
             fetchText(path, function (text) {
 
+                config.CoffeeScript = config.CoffeeScript || {};
+                config.CoffeeScript.sourceMap = true;
+                config.CoffeeScript.sourceFiles = [path];
+
+                var compiled;
+
                 //Do CoffeeScript transform.
                 try {
-                    text = CoffeeScript.compile(text, config.CoffeeScript);
+                    compiled = CoffeeScript.compile(text, config.CoffeeScript);
                 } catch (err) {
                     err.message = "In " + path + ", " + err.message;
                     throw err;
                 }
 
+                console.log(compiled);
+
+                //Add in the source map if supported
+                if (window.btoa)
+                    text = compiled.js + '\n//@ sourceMappingURL=data:application/json;base64,' + btoa(compiled.v3SourceMap) + ',\n//@ sourceURL=' + path;
+
                 //Hold on to the transformed text if a build.
                 if (config.isBuild) {
                     buildMap[name] = text;
                 }
-
-                //IE with conditional comments on cannot handle the
-                //sourceURL trick, so skip it if enabled.
-                /*@if (@_jscript) @else @*/
-                if (!config.isBuild) {
-                    text += "\r\n//@ sourceURL=" + path;
-                }
-                /*@end@*/
 
                 load.fromText(name, text);
 
