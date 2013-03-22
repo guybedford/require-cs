@@ -130,6 +130,7 @@ define(['coffee-script'], function (CoffeeScript) {
                 config.CoffeeScript.sourceMap = true;
                 config.CoffeeScript.inline = true;
                 config.CoffeeScript.sourceFiles = [path];
+                config.CoffeeScript.generatedFile = path.replace('.coffee', '.js');
 
                 var compiled;
 
@@ -144,7 +145,7 @@ define(['coffee-script'], function (CoffeeScript) {
 
                 //Add in the source map
                 if (window.btoa)
-                    text = compiled.js + '\n//@ sourceMappingURL=data:application/json;base64,' + btoa(compiled.v3SourceMap) + '\n//@ sourceURL=' + path;
+                    text = compiled.js + '\n//@ sourceMappingURL=data:application/json;base64,' + btoa(compiled.v3SourceMap) + '\n//@ sourceURL=' + path.replace('.coffee', '.js');
 
                 //Hold on to the transformed text if a build.
                 if (config.isBuild) {
