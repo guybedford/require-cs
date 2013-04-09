@@ -141,7 +141,28 @@ define(['coffee-script'], function (CoffeeScript) {
                     err.message = "In " + path + ", " + err.message;
                     throw err;
                 }
-                console.log(compiled);
+
+                /*
+                  Source map looks like:
+                  {
+                    "version": 3,
+                    "file": "some/file.js",
+                    "sourceRoot": "",
+                    "sources": ["some/file.coffee"],
+                    "names": [],
+                    "mappings": "(as expected)",
+                    "sourcesContent": ["(original source string)"]
+                  }
+
+                  Then we set the eval to:
+
+                    (javascript source)
+                    //@ sourceMappingURL=data:application/json;base64,(sourceMap)
+                    //@ sourceURL=some/file.js
+
+                  Thus the attempt is to use "some/file.js" as the file the "eval" script comes from,
+                  while source mapping that back to the original coffeescript.
+                */
 
                 //Add in the source map
                 if (window.btoa)
